@@ -5,7 +5,7 @@ type Props = {
   trip: any;
 };
 
-export const Footer: FC<Props> = ({ trip }) => {
+export const Footer: FC<Props> = () => {
   return (
     <div>
       <h2></h2>

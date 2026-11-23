@@ -1,45 +1,72 @@
-import { db } from "@/service/firebaseConfig";
-import { collection, getDocs, query, where } from "firebase/firestore";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import UserCardTrips from "./components/UserCardTrips";
+import { getStoredTrips, deleteTrip } from "@/service/tripStorage";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export const History = () => {
-  const navigation = useNavigate();
   const [trips, setTrips] = useState<any[]>([]);
 
-  useEffect(() => {
-    getUserTrip();
+  const loadTrips = useCallback(() => {
+    const stored = getStoredTrips();
+    setTrips(stored);
   }, []);
 
-  const getUserTrip = useCallback(async () => {
-    const user = JSON.parse(localStorage.getItem("user")!);
-    if (!user) {
-      navigation("/");
-      return;
+  useEffect(() => {
+    loadTrips();
+  }, [loadTrips]);
+
+  const handleDeleteTrip = (id: string) => {
+    const success = deleteTrip(id);
+    if (success) {
+      setTrips((prev) => prev.filter((t) => String(t.id) !== String(id)));
+      toast("Trip deleted successfully.");
+    } else {
+      toast("Failed to delete trip.");
     }
-
-    const q = query(
-      collection(db, "AITrips"),
-      where("userEmail", "==", user?.email)
-    );
-
-    const querySnapshot = await getDocs(q);
-    const newTrips: any[] = [];
-    querySnapshot.forEach((doc) => {
-      newTrips.push(doc.data());
-    });
-
-    setTrips(newTrips);
-  }, [navigation]);
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 bg-[#09111f] min-h-screen text-white">
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-10">
-        {trips.map((item: any, index: number) => {
-          return <UserCardTrips trip={item} key={index} />;
-        })}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">My Trips</h1>
+          <p className="text-gray-400 mt-1">
+            Your saved travel itineraries (stored locally in this browser)
+          </p>
+        </div>
+        <Link to="/create-trip">
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            + Plan New Trip
+          </Button>
+        </Link>
       </div>
+
+      {trips.length === 0 ? (
+        <div className="text-center py-20 bg-[#0d1b2a] rounded-xl p-8 border border-gray-800">
+          <h2 className="text-2xl font-semibold mb-2">No Trips Saved Yet</h2>
+          <p className="text-gray-400 mb-6">
+            You haven't generated any trips yet. Start planning your next adventure!
+          </p>
+          <Link to="/create-trip">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              Create a Trip
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {trips.map((item: any) => (
+            <UserCardTrips
+              trip={item}
+              key={item.id}
+              onDelete={handleDeleteTrip}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

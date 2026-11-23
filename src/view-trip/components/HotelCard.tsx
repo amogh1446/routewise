@@ -43,7 +43,7 @@ export const HotelCard: FC<Props> = ({ hotel }) => {
             {hotel?.rating}
           </p>
         </div>
-        <div className="mt-4">
+        <div className="mt-4 no-print">
           <motion.div
             className="bg-blue-500 text-white p-2 rounded-lg flex items-center justify-center space-x-2 hover:bg-blue-600 transition-colors duration-200"
             whileHover={{ scale: 1.1, rotate: 5 }}

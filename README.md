@@ -1,66 +1,62 @@
-# AI TRIP PLANNER
+# RouteWise — AI Trip Planner ✈️🗺️
 
-AI Trip Planner is a smart app that helps you plan your trips based on your preferences and needs. Whether you’re a seasoned traveler or planning your first big adventure, our tool is here to make your life easier. 🌟
-Currently, two official plugins are available:
+**RouteWise** is a smart, zero-login, database-free travel planning web application. It generates personalized multi-day travel itineraries with sequential hop-by-hop transit legs, en-route food pitstops, hotel recommendations, and one-click Google Maps GPS navigation.
 
-# 💡 Key Features:
+---
 
-    Personalized Suggestions: Answer a few simple questions and let our AI generate a customized itinerary just for you.
-    Google Places Integration: Easily find and select your ideal destination with Google Places autocomplete.
-    Flexible Planning: Set your travel duration, budget, and travel companions, and the app takes care of the rest!
-    Itinerary Generation: Receive a detailed itinerary with just one click, tailored to your preferences and constraints.
-    Save and Share: Keep your itineraries organized and share them with your travel companions.
+## 🌟 Key Features
 
-# 🔧 How It Works:
+* **Sequential Hop-by-Hop Itineraries:** Plans realistic routes departing from a central hotel hub, calculating commute distances (`km`), driving times, and scenic route notes between each spot.
+* **En-Route Food & Café Pitstops:** Recommends authentic roadside eateries, local coffee estates, and signature regional dining spots situated directly along your driving path between attractions.
+* **1-Click Multi-Stop Google Maps GPS Navigation:** Deep-links the day's complete route (`Hotel ➔ Spot 1 ➔ Pitstop ➔ Spot 2 ➔ Return`) directly into Google Maps for instant turn-by-turn driving directions.
+* **Offline Portability ("Save as PDF"):** Built-in print formatting (`@media print`) that creates clean, beautiful A4 travel documents ready to save or print for offline travel.
+* **Google Places API (New):** Fast, reliable destination autocomplete with session token optimization.
+* **Zero-Auth & Database-Free:** All trips are stored directly in your browser's `localStorage`—no logins, passwords, or cloud database setup required.
+* **Resilient Multi-Model AI Engine:** Cascades through Google's modern Gemini models (`gemini-3.5-flash`, `gemini-3.8-flash`, `gemini-3.5-flash-lite`, `gemini-3-flash-preview`) with automatic failover protection.
 
-    Select Your Destination: Use Google Places integration to choose your travel location.
-    Specify Your Trip Duration: Use our intuitive date picker to set your travel dates.
-    Define Your Budget and Travel Companions: Choose from various budget options and specify who you’ll be traveling with.
-    Generate Your Itinerary: Click a button and let the AI do the rest, providing you with a personalized travel plan.
+---
 
-# Set Up Environment Variables
+## 🛠️ Tech Stack
 
-Create a new file named .env.local in the root of your project and add the following content:
+* **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Framer Motion, Lucide Icons, Radix UI
+* **Routing:** React Router v6 (SPA with `RootLayout` & hash scrolling)
+* **APIs:** 
+  * Google Maps Platform (Places API New, Maps JS API Loader, Directions)
+  * Google Gemini Generative AI API
+* **Storage:** Client-side Browser `localStorage`
 
-VITE_GOOGLE_PLACE_API_KEY
-VITE_GOOGLE_GEMINI_API_KEY
-VITE_GOOGLE_CLIENT_ID_KEY
+---
 
-VITE_FIREBASE_API_KEY
-VITE_AUTH_DOMAIN
-VITE_PROJECT_ID
-VITE_STORAGE_BUCKET
-VITE_MESSAGING_SENDER_ID
-VITE_APP_ID
-VITE_MESUREMENT_ID
+## 🚀 Getting Started
 
-VITE_SENTRY_DSN
-
-# Screenshot
-
-![alt text](1.png)
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-    project: ["./tsconfig.json", "./tsconfig.node.json"],
-    tsconfigRootDir: __dirname,
-  },
-};
+### 1. Clone the repository
+```bash
+git clone https://github.com/amogh1446/routewise.git
+cd routewise
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### 2. Install dependencies
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+Create a `.env.local` file in the root directory (based on `.env.example`):
+```env
+VITE_GOOGLE_PLACE_API_KEY=your_google_places_api_key
+VITE_GOOGLE_GEMINI_API_KEY=your_google_gemini_api_key
+```
+
+> **Security Note:** In Google Cloud Console, restrict your Google Maps API key to **Maps JavaScript API** and **Places API (New)** with HTTP referrer restrictions.
+
+### 4. Run the development server
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## 📄 License
+MIT License. Created by [amogh1446](https://github.com/amogh1446).

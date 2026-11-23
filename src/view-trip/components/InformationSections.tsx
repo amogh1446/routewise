@@ -2,12 +2,15 @@ import { Button } from "@/components/ui/button";
 import usePlacePhoto from "@/hooks/useGetPhoto";
 import { FC } from "react";
 import { LuShare2 } from "react-icons/lu";
+import { Printer } from "lucide-react";
 import {
   CalendarIcon,
   CurrencyDollarIcon,
   UsersIcon,
+  MapPinIcon,
 } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 type Props = {
   trip: any;
@@ -15,22 +18,46 @@ type Props = {
 
 const InformationSections: FC<Props> = ({ trip }) => {
   const photoUrl = usePlacePhoto(trip?.userSelection?.location?.label);
+  const centralHub = trip?.tripData?.trip_details?.central_hub;
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: `Trip to ${
+            trip?.userSelection?.location?.label || "My Saved Trip"
+          }`,
+          url: window.location.href,
+        })
+        .catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast("Trip link copied to clipboard!");
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   return (
-    <div className="bg-[#09111f] p-6 rounded-lg shadow-md mb-8">
-      <motion.img
-        src={photoUrl!}
-        alt="Destination"
-        className="h-80 w-full object-cover rounded-t-lg"
-        initial={{ opacity: 0, scale: 1.05 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      />
+    <div className="bg-[#09111f] p-4 sm:p-6 rounded-2xl shadow-xl mb-8 border border-gray-800">
+      <div className="relative overflow-hidden rounded-xl">
+        <motion.img
+          src={photoUrl!}
+          alt="Destination"
+          className="h-64 sm:h-80 w-full object-cover rounded-xl"
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#09111f] via-transparent to-transparent opacity-80" />
+      </div>
 
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-5 gap-4">
         <div className="flex flex-col gap-3">
           <motion.h2
-            className="text-3xl font-bold text-white"
+            className="text-2xl sm:text-4xl font-extrabold text-white"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -38,42 +65,50 @@ const InformationSections: FC<Props> = ({ trip }) => {
             {trip?.userSelection?.location?.label}
           </motion.h2>
 
-          <div className="flex flex-wrap gap-4">
-            <motion.div
-              className="flex items-center bg-gray-700 p-2 px-4 rounded-full text-gray-300 text-sm"
-              whileHover={{ scale: 1.05, backgroundColor: "#1d2a44" }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <CalendarIcon className="w-5 h-5 mr-2" />
+          <div className="flex flex-wrap gap-2.5 sm:gap-3 text-xs sm:text-sm">
+            <div className="flex items-center bg-gray-800/80 border border-gray-700/60 p-2 px-3.5 rounded-full text-gray-200">
+              <CalendarIcon className="w-4 h-4 mr-1.5 text-blue-400" />
               {trip?.userSelection?.noOfDays} Days
-            </motion.div>
-            <motion.div
-              className="flex items-center bg-gray-700 p-2 px-4 rounded-full text-gray-300 text-sm"
-              whileHover={{ scale: 1.05, backgroundColor: "#1d2a44" }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <CurrencyDollarIcon className="w-5 h-5 mr-2" />
-              {trip?.userSelection?.budget}
-            </motion.div>
-            <motion.div
-              className="flex items-center bg-gray-700 p-2 px-4 rounded-full text-gray-300 text-sm"
-              whileHover={{ scale: 1.05, backgroundColor: "#1d2a44" }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <UsersIcon className="w-5 h-5 mr-2" />
-              {trip?.userSelection?.traveler} Travelers
-            </motion.div>
+            </div>
+
+            <div className="flex items-center bg-gray-800/80 border border-gray-700/60 p-2 px-3.5 rounded-full text-gray-200">
+              <CurrencyDollarIcon className="w-4 h-4 mr-1.5 text-emerald-400" />
+              {trip?.userSelection?.budget} Budget
+            </div>
+
+            <div className="flex items-center bg-gray-800/80 border border-gray-700/60 p-2 px-3.5 rounded-full text-gray-200">
+              <UsersIcon className="w-4 h-4 mr-1.5 text-indigo-400" />
+              {trip?.userSelection?.traveler}
+            </div>
+
+            {centralHub && (
+              <div className="flex items-center bg-blue-950/60 border border-blue-800/50 p-2 px-3.5 rounded-full text-blue-200">
+                <MapPinIcon className="w-4 h-4 mr-1.5 text-blue-400" />
+                Base: {centralHub}
+              </div>
+            )}
           </div>
         </div>
-        <motion.div
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-2"
-          whileHover={{ scale: 1.1, rotate: 10 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <Button className="flex items-center justify-center w-full">
-            <LuShare2 className="w-5 h-5" />
+
+        {/* Action Buttons: Save as PDF & Share */}
+        <div className="flex items-center gap-2.5 self-end sm:self-auto no-print">
+          <Button
+            onClick={handlePrint}
+            className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-4 py-2 flex items-center gap-2 shadow-md shadow-emerald-600/30 font-medium transition cursor-pointer"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Save as PDF</span>
           </Button>
-        </motion.div>
+
+          <Button
+            onClick={handleShare}
+            variant="outline"
+            className="border-gray-700 bg-gray-800/80 hover:bg-gray-700 text-white rounded-xl px-4 py-2 flex items-center gap-2 font-medium transition cursor-pointer"
+          >
+            <LuShare2 className="w-4 h-4" />
+            <span>Share</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   API_PROMPT,
@@ -6,19 +7,10 @@ import {
   SelectTravelsList,
 } from "@/constants/options";
 import { chatSession } from "@/service/aiModal";
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import AsyncSelect from "react-select/async";
+import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-} from "@/components/ui/dialog";
-import { useGoogleLogin } from "@react-oauth/google";
-import useAxios from "@/hooks/useAxios";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/service/firebaseConfig";
-import { useDialog } from "@/hooks/useDialog";
+import { saveTrip } from "@/service/tripStorage";
 import { useForm } from "@/hooks/useForm";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
@@ -30,80 +22,194 @@ import {
   CurrencyDollarIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
-import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 import Counter from "@/components/shared/Counter";
 
+interface PlaceOption {
+  label: string;
+  value: {
+    place_id: string;
+    description: string;
+    main_text?: string;
+    secondary_text?: string;
+  };
+}
+
 const CreateTrip = () => {
   const { formData, handleInputChange } = useForm({});
-  const { openDialog, toggleDialog } = useDialog();
-  const axiosInstance = useAxios();
-  const [place, setPlace] = useState<any | null>(null);
+  const [place, setPlace] = useState<PlaceOption | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const navigation = useNavigate();
 
-  const handleGenerateTrip = async () => {
-    const user = localStorage.getItem("user");
-    if (!user) {
-      toggleDialog();
+  const placesLibRef = useRef<google.maps.PlacesLibrary | null>(null);
+  const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const apiKey = import.meta.env.VITE_GOOGLE_PLACE_API_KEY;
+    if (!apiKey) {
+      console.warn("VITE_GOOGLE_PLACE_API_KEY is missing in environment variables.");
       return;
     }
+
+    if (typeof window !== "undefined" && !window.google?.maps?.importLibrary) {
+      setOptions({
+        key: apiKey,
+        v: "weekly",
+      });
+    }
+
+    importLibrary("places")
+      .then((lib) => {
+        placesLibRef.current = lib;
+        sessionTokenRef.current = new lib.AutocompleteSessionToken();
+      })
+      .catch((err) => {
+        console.error("Error preloading Google Maps places library:", err);
+      });
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  const loadOptions = (inputValue: string): Promise<PlaceOption[]> => {
+    return new Promise((resolve) => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      if (!inputValue || !inputValue.trim()) {
+        resolve([]);
+        return;
+      }
+
+      timerRef.current = setTimeout(async () => {
+        try {
+          let placesLib = placesLibRef.current;
+          if (!placesLib) {
+            const apiKey = import.meta.env.VITE_GOOGLE_PLACE_API_KEY;
+            if (typeof window !== "undefined" && !window.google?.maps?.importLibrary) {
+              setOptions({
+                key: apiKey,
+                v: "weekly",
+              });
+            }
+            placesLib = await importLibrary("places");
+            placesLibRef.current = placesLib;
+          }
+
+          if (!sessionTokenRef.current) {
+            sessionTokenRef.current = new placesLib.AutocompleteSessionToken();
+          }
+
+          const request: google.maps.places.AutocompleteRequest = {
+            input: inputValue,
+            sessionToken: sessionTokenRef.current,
+          };
+
+          const response =
+            await placesLib.AutocompleteSuggestion.fetchAutocompleteSuggestions(
+              request
+            );
+
+          if (!response || !response.suggestions) {
+            resolve([]);
+            return;
+          }
+
+          const options: PlaceOption[] = response.suggestions
+            .filter((s) => s.placePrediction)
+            .map((s) => {
+              const pred = s.placePrediction!;
+              const text = pred.text ? pred.text.toString() : "";
+              return {
+                label: text,
+                value: {
+                  place_id: pred.placeId,
+                  description: text,
+                  main_text: pred.mainText ? pred.mainText.toString() : "",
+                  secondary_text: pred.secondaryText
+                    ? pred.secondaryText.toString()
+                    : "",
+                },
+              };
+            });
+
+          resolve(options);
+        } catch (error) {
+          console.error("Error fetching autocomplete suggestions:", error);
+          resolve([]);
+        }
+      }, 250);
+    });
+  };
+
+  const handleGenerateTrip = async () => {
     if (
-      (formData.noOfDays! > 5 && formData.location) ||
+      !formData.location ||
+      !formData.noOfDays ||
+      formData.noOfDays > 5 ||
       !formData.budget ||
       !formData.traveler
     ) {
-      toast("Please fill all details.");
+      toast("Please fill all details (maximum 5 days).");
       return;
     }
+
     setLoading(true);
-    const FINAL_PROMPT = API_PROMPT.replace(
-      "{location}",
-      formData.location!.label
-    )
-      .replace("{totalDays}", formData.noOfDays!.toString())
-      .replace("{traveler}", formData.traveler!)
-      .replace("{budget}", formData.budget!);
-
-    const result = await chatSession.sendMessage(FINAL_PROMPT);
-    setLoading(false);
-    saveAITrips(result?.response?.text());
-  };
-
-  const saveAITrips = async (tripData: any) => {
-    setLoading(true);
-
-    const user = JSON.parse(localStorage.getItem("user")!);
-    const docId = Date.now().toString();
-    await setDoc(doc(db, "AITrips", docId), {
-      userSelection: formData,
-      tripData: JSON.parse(tripData),
-      userEmail: user?.email,
-      id: docId,
-    });
-    setLoading(false);
-    navigation(`/view-trip/${docId}`);
-  };
-
-  const login = useGoogleLogin({
-    onSuccess: (credentialResponse) => {
-      getUserProfile(credentialResponse.access_token);
-    },
-    onError: () => {
-      console.log("Login Failed");
-    },
-  });
-
-  const getUserProfile = async (accessToken: string) => {
     try {
-      const response = await axiosInstance.get(
-        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`
-      );
-      localStorage.setItem("user", JSON.stringify(response.data));
-      toggleDialog();
-      handleGenerateTrip();
+      const FINAL_PROMPT = API_PROMPT.replace(
+        "{location}",
+        formData.location.label
+      )
+        .replace("{totalDays}", formData.noOfDays.toString())
+        .replace("{traveler}", formData.traveler)
+        .replace("{budget}", formData.budget);
+
+      const result = await chatSession.sendMessage(FINAL_PROMPT);
+      const responseText = result?.response?.text();
+      saveAITrips(responseText);
     } catch (error) {
-      console.error("Error fetching user profile", error);
+      console.error("Error generating trip:", error);
+      toast("Failed to generate trip. Please check your API key and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveAITrips = (tripData: any) => {
+    try {
+      let cleanedData = typeof tripData === "string" ? tripData.trim() : "";
+
+      // Clean markdown code blocks if present
+      cleanedData = cleanedData
+        .replace(/```json/gi, "")
+        .replace(/```/g, "")
+        .trim();
+
+      // Extract JSON substring between the first { and the last }
+      const firstBrace = cleanedData.indexOf("{");
+      const lastBrace = cleanedData.lastIndexOf("}");
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        cleanedData = cleanedData.substring(firstBrace, lastBrace + 1);
+      }
+
+      const parsedTripData =
+        typeof cleanedData === "string" ? JSON.parse(cleanedData) : cleanedData;
+
+      const newTrip = saveTrip({
+        userSelection: formData,
+        tripData: parsedTripData,
+      });
+
+      toast("Trip generated and saved successfully!");
+      navigation(`/view-trip/${newTrip.id}`);
+    } catch (error) {
+      console.error("Error parsing or saving trip data:", error);
+      toast("Failed to parse trip response. Please try again.");
     }
   };
 
@@ -136,28 +242,32 @@ const CreateTrip = () => {
           <h3 className="text-2xl font-semibold mb-4">
             What's your destination?
           </h3>
-          <GooglePlacesAutocomplete
-            apiKey={import.meta.env.VITE_GOOGLE_PLACE_API_KEY}
-            selectProps={{
-              value: place,
-              onChange: (v) => {
-                setPlace(v);
-                handleInputChange("location", v);
-              },
-              styles: {
-                input: (provided) => ({
-                  ...provided,
-                  color: "blue",
-                }),
-                option: (provided) => ({
-                  ...provided,
-                  color: "blue",
-                }),
-                singleValue: (provided) => ({
-                  ...provided,
-                  color: "blue",
-                }),
-              },
+          <AsyncSelect
+            value={place}
+            loadOptions={loadOptions}
+            onChange={(v) => {
+              setPlace(v);
+              handleInputChange("location", v);
+              if (placesLibRef.current) {
+                sessionTokenRef.current =
+                  new placesLibRef.current.AutocompleteSessionToken();
+              }
+            }}
+            placeholder="Select..."
+            isClearable
+            styles={{
+              input: (provided) => ({
+                ...provided,
+                color: "blue",
+              }),
+              option: (provided) => ({
+                ...provided,
+                color: "blue",
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: "blue",
+              }),
             }}
           />
         </motion.div>
@@ -272,25 +382,6 @@ const CreateTrip = () => {
           )}
         </Button>
       </motion.div>
-
-      <Dialog open={openDialog} onOpenChange={toggleDialog}>
-        <DialogContent className="bg-[#1a202c] text-white rounded-lg p-6">
-          <DialogHeader>
-            <DialogDescription className="text-center">
-              <h2 className="text-2xl font-bold mb-2">AI Trip Planner</h2>
-              <p className="mb-4">Sign in with Google to continue</p>
-              <Button
-                onClick={() => login()}
-                disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-3 mt-4"
-              >
-                <FcGoogle className="w-6 h-6" />
-                Sign in with Google
-              </Button>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

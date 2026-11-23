@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import "./App.css";
@@ -10,6 +12,19 @@ import HowItWorks from "./components/shared/HowItWorks";
 import Pricing from "./components/shared/Pricing";
 
 const App = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      const elem = document.getElementById(id);
+      if (elem) {
+        setTimeout(() => {
+          elem.scrollIntoView({ behavior: "smooth" });
+        }, 150);
+      }
+    }
+  }, [location.hash]);
   // Create useInView hooks for each section
   const { ref: heroRef, inView: heroInView } = useInView({
     triggerOnce: true,

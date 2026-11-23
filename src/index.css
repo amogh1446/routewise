@@ -59,3 +59,56 @@
     --chart-5: 340 75% 55%;
   }
 }
+
+/* ========================================================
+   Print & Save as PDF Styles
+   ======================================================== */
+@media print {
+  /* Hide navigation, buttons, and decorative chrome */
+  header,
+  footer,
+  .no-print,
+  button,
+  .sonner-toaster,
+  [data-sonner-toaster] {
+    display: none !important;
+  }
+
+  /* Force background colors and exact styling in print/PDF */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Base print container */
+  html,
+  body,
+  #root {
+    background: #09111f !important;
+    color: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Page margins */
+  @page {
+    size: A4 portrait;
+    margin: 1.5cm 1.2cm;
+  }
+
+  /* Prevent awkward card slicing across pages */
+  .break-inside-avoid,
+  article,
+  section,
+  [class*="rounded-2xl"],
+  [class*="rounded-xl"] {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Prevent image truncation */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid !important;
+  }
+}
