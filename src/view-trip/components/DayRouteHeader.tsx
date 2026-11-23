@@ -49,21 +49,21 @@ export const DayRouteHeader: React.FC<DayRouteHeaderProps> = ({
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#0d182b] via-[#101e38] to-[#0c1626] border border-blue-800/40 rounded-2xl p-5 mb-5 shadow-lg">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="day-header-card print-avoid-break bg-gradient-to-r from-[#0d182b] via-[#101e38] to-[#0c1626] border border-blue-800/40 rounded-2xl p-5 mb-5 shadow-lg print:p-3 print:mb-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:gap-1">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-3 py-0.5 rounded-full bg-blue-600/30 border border-blue-500/40 text-blue-300 font-bold text-xs uppercase tracking-wider">
+          <div className="flex items-center gap-2 mb-1.5 print:mb-0.5">
+            <span className="px-3 py-0.5 rounded-full bg-blue-600/30 border border-blue-500/40 text-blue-300 font-bold text-xs uppercase tracking-wider print:text-[10px] print:px-2">
               Day {dayNumber} Journey
             </span>
             {startingPoint && (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-400 print:text-[10px]">
                 Hub: <span className="text-gray-200">{startingPoint}</span>
               </span>
             )}
           </div>
 
-          <h3 className="text-xl sm:text-2xl font-bold text-white">
+          <h3 className="text-xl sm:text-2xl font-bold text-white print:text-base print:leading-tight">
             {dayTitle || `Day ${dayNumber}: Highlights & Hidden Gems`}
           </h3>
         </div>
@@ -87,7 +87,7 @@ export const DayRouteHeader: React.FC<DayRouteHeaderProps> = ({
       </div>
 
       {/* Route Quick Stats Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4 pt-4 border-t border-gray-800/80 text-xs">
+      <div className="day-header-stats grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4 pt-4 border-t border-gray-800/80 text-xs print:grid-cols-4 print:gap-1.5 print:mt-2 print:pt-2 print:text-[10px]">
         <div className="flex items-center gap-2 bg-[#09111f]/60 p-2.5 rounded-xl border border-gray-800/60">
           <Navigation className="w-4 h-4 text-blue-400 flex-shrink-0" />
           <div>

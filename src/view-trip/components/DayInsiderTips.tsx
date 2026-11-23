@@ -20,17 +20,17 @@ export const DayInsiderTips: React.FC<DayInsiderTipsProps> = ({ tips }) => {
   }
 
   return (
-    <div className="my-6 bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-slate-900/60 border border-purple-800/30 rounded-2xl p-4 sm:p-5 shadow-lg text-white">
-      <div className="flex items-center gap-2 mb-3">
-        <Sparkles className="w-4 h-4 text-purple-300" />
-        <h4 className="text-sm font-bold uppercase tracking-wider text-purple-200">
+    <div className="insider-tips-block print-avoid-break my-6 bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-slate-900/60 border border-purple-800/30 rounded-2xl p-4 sm:p-5 shadow-lg text-white print:my-2 print:p-2.5 print:rounded-xl">
+      <div className="flex items-center gap-2 mb-3 print:mb-1.5">
+        <Sparkles className="w-4 h-4 text-purple-300 print:w-3 print:h-3" />
+        <h4 className="text-sm font-bold uppercase tracking-wider text-purple-200 print:text-xs">
           AI Local Insider & Travel Hacks
         </h4>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs sm:text-sm">
+      <div className="insider-tips-grid grid grid-cols-1 md:grid-cols-3 gap-3 text-xs sm:text-sm print:grid-cols-3 print:gap-2 print:text-xs">
         {tips.secret_hack && (
-          <div className="bg-purple-950/30 border border-purple-800/30 p-3 rounded-xl">
+          <div className="bg-purple-950/30 border border-purple-800/30 p-3 rounded-xl print:p-2 print:rounded-lg">
             <span className="flex items-center gap-1.5 font-semibold text-purple-300 mb-1">
               <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
               Local Secret / Crowd Hack:
@@ -42,7 +42,7 @@ export const DayInsiderTips: React.FC<DayInsiderTipsProps> = ({ tips }) => {
         )}
 
         {tips.best_photo_spot && (
-          <div className="bg-purple-950/30 border border-purple-800/30 p-3 rounded-xl">
+          <div className="bg-purple-950/30 border border-purple-800/30 p-3 rounded-xl print:p-2 print:rounded-lg">
             <span className="flex items-center gap-1.5 font-semibold text-cyan-300 mb-1">
               <Camera className="w-3.5 h-3.5 text-cyan-400" />
               Best Photo Vantage:
@@ -54,7 +54,7 @@ export const DayInsiderTips: React.FC<DayInsiderTipsProps> = ({ tips }) => {
         )}
 
         {tips.packing_or_weather && (
-          <div className="bg-purple-950/30 border border-purple-800/30 p-3 rounded-xl">
+          <div className="bg-purple-950/30 border border-purple-800/30 p-3 rounded-xl print:p-2 print:rounded-lg">
             <span className="flex items-center gap-1.5 font-semibold text-emerald-300 mb-1">
               <Luggage className="w-3.5 h-3.5 text-emerald-400" />
               Packing & Comfort Tip:

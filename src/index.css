@@ -61,49 +61,216 @@
 }
 
 /* ========================================================
-   Print & Save as PDF Styles
+   Print & Save as PDF Styles (Optimized for Multi-Page Itineraries)
    ======================================================== */
 @media print {
   /* Hide navigation, buttons, and decorative chrome */
   header,
   footer,
+  nav,
   .no-print,
   button,
   .sonner-toaster,
-  [data-sonner-toaster] {
+  [data-sonner-toaster],
+  [role="status"],
+  [role="alert"] {
     display: none !important;
   }
 
-  /* Force background colors and exact styling in print/PDF */
-  * {
+  /* Exact color rendering in PDF */
+  *,
+  *::before,
+  *::after {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    /* Eliminate transforms and animations that break Chromium print page calculation */
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
 
-  /* Base print container */
+  /* Base page sizing & margins */
+  @page {
+    size: A4 portrait;
+    margin: 8mm 8mm 8mm 8mm;
+  }
+
+  /* Root containers: eliminate screen heights and outer paddings */
   html,
   body,
-  #root {
+  #root,
+  .view-trip-wrapper,
+  .min-h-screen,
+  [class*="min-h-screen"] {
     background: #09111f !important;
     color: #ffffff !important;
     margin: 0 !important;
     padding: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
   }
 
-  /* Page margins */
-  @page {
-    size: A4 portrait;
-    margin: 1.5cm 1.2cm;
-  }
-
-  /* Prevent awkward card slicing across pages */
-  .break-inside-avoid,
-  article,
-  section,
-  [class*="rounded-2xl"],
-  [class*="rounded-xl"] {
+  /* Overview Section (Page 1): Compact Hero + All Hotels */
+  .trip-overview-header {
+    margin-bottom: 8px !important;
+    padding: 10px !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
+  }
+
+  .trip-overview-header img {
+    height: 150px !important;
+    max-height: 150px !important;
+    object-fit: cover !important;
+  }
+
+  /* Hotel Recommendations on Page 1: Fit in 1 row */
+  .hotel-section {
+    margin-bottom: 0 !important;
+    padding: 6px 10px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .hotel-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .hotel-card-item {
+    padding: 8px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .hotel-card-item img {
+    height: 80px !important;
+    max-height: 80px !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* Places to visit wrapper */
+  .places-container {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Day Pages: Each Day starts cleanly on a fresh A4 page */
+  .print-day-container {
+    break-before: page !important;
+    page-break-before: always !important;
+    break-inside: auto !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 2px !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Day Header: never break after, always stay with first stop */
+  .day-header-card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+    padding: 10px 14px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .day-header-stats {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    margin-top: 6px !important;
+    padding-top: 6px !important;
+  }
+
+  /* Hub departure node */
+  .hub-node {
+    padding: 6px 10px !important;
+    margin-bottom: 6px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Atomic cards: Never break mid-card */
+  .visit-card-item,
+  .food-card-item,
+  .transit-leg-item,
+  .insider-tips-block,
+  .print-avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Visit Card compact print styling */
+  .visit-card-item {
+    padding: 10px 12px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .visit-card-item img {
+    width: 105px !important;
+    height: 90px !important;
+    min-width: 105px !important;
+  }
+
+  /* Transit Leg Connector compact print styling */
+  .transit-leg-item {
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+  }
+
+  .transit-leg-box {
+    padding: 6px 10px !important;
+  }
+
+  /* En-Route Food Card compact print styling */
+  .food-card-item {
+    margin-top: 6px !important;
+    margin-bottom: 6px !important;
+    padding: 8px 10px !important;
+  }
+
+  .food-highlights-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    margin-top: 6px !important;
+    padding-top: 6px !important;
+  }
+
+  /* Day Insider Tips compact 3-column print styling */
+  .insider-tips-block {
+    margin-top: 6px !important;
+    margin-bottom: 0 !important;
+    padding: 8px 10px !important;
+  }
+
+  .insider-tips-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .insider-tips-grid > div {
+    padding: 6px 8px !important;
+  }
+
+  /* Remove excessive trailing margins on last elements to prevent blank trailing page */
+  .print-day-container:last-child {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   /* Prevent image truncation */
@@ -111,4 +278,70 @@
     max-width: 100% !important;
     page-break-inside: avoid !important;
   }
+
+  /* ----------------------------------------------------
+     Ink-Friendly Light Mode Theme (Optional)
+     ---------------------------------------------------- */
+  body.print-light-mode,
+  body.print-light-mode #root,
+  body.print-light-mode .view-trip-wrapper {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  body.print-light-mode .trip-overview-header,
+  body.print-light-mode .hotel-section,
+  body.print-light-mode .hotel-card-item,
+  body.print-light-mode .visit-card-item,
+  body.print-light-mode .food-card-item,
+  body.print-light-mode .day-header-card,
+  body.print-light-mode .insider-tips-block,
+  body.print-light-mode .transit-leg-box,
+  body.print-light-mode .hub-node {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+
+  body.print-light-mode h2,
+  body.print-light-mode h3,
+  body.print-light-mode h4,
+  body.print-light-mode strong {
+    color: #0f172a !important;
+  }
+
+  body.print-light-mode p,
+  body.print-light-mode span,
+  body.print-light-mode div {
+    color: #334155 !important;
+  }
+
+  body.print-light-mode .text-white {
+    color: #0f172a !important;
+  }
+
+  body.print-light-mode .text-gray-300,
+  body.print-light-mode .text-gray-400 {
+    color: #475569 !important;
+  }
+
+  body.print-light-mode .text-blue-200,
+  body.print-light-mode .text-blue-300,
+  body.print-light-mode .text-blue-400 {
+    color: #1d4ed8 !important;
+  }
+
+  body.print-light-mode .text-amber-100,
+  body.print-light-mode .text-amber-200,
+  body.print-light-mode .text-amber-300,
+  body.print-light-mode .text-amber-400 {
+    color: #b45309 !important;
+  }
+
+  body.print-light-mode .text-emerald-300,
+  body.print-light-mode .text-emerald-400 {
+    color: #047857 !important;
+  }
 }
+

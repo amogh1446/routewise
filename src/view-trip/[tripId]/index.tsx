@@ -53,7 +53,7 @@ const ViewTrips = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 bg-[#09111f] min-h-screen text-white">
+    <div className="view-trip-wrapper max-w-5xl mx-auto px-4 py-10 bg-[#09111f] min-h-screen text-white print:max-w-full print:p-0 print:m-0 print:min-h-0 print:bg-transparent">
       <InformationSections trip={trip} />
       <Hotels trip={trip} />
       <PlacesToVisit trip={trip} />

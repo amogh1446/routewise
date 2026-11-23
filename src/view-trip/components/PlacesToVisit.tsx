@@ -51,7 +51,7 @@ export const PlacesToVisit: FC<Props> = ({ trip }) => {
   }
 
   return (
-    <div className="bg-[#09111f] p-4 sm:p-6 rounded-2xl shadow-xl mb-8 border border-gray-800/80">
+    <div className="places-container bg-[#09111f] p-4 sm:p-6 rounded-2xl shadow-xl mb-8 border border-gray-800/80">
       {/* Header with View Toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
         <div>
@@ -115,7 +115,7 @@ export const PlacesToVisit: FC<Props> = ({ trip }) => {
         return (
           <motion.div
             key={`${dayItem.day || dayIdx + 1}-${dayIdx}`}
-            className="mb-12 last:mb-2"
+            className="print-day-container mb-12 last:mb-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: dayIdx * 0.1 }}
@@ -137,7 +137,7 @@ export const PlacesToVisit: FC<Props> = ({ trip }) => {
             {viewMode === "timeline" ? (
               <div className="relative pl-1 sm:pl-4">
                 {/* Hub Starting Node */}
-                <div className="flex items-center gap-3 bg-[#0d172a] border border-blue-900/60 rounded-xl px-4 py-3 text-sm text-gray-200 mb-2 shadow-sm">
+                <div className="hub-node print-avoid-break flex items-center gap-3 bg-[#0d172a] border border-blue-900/60 rounded-xl px-4 py-3 text-sm text-gray-200 mb-2 shadow-sm">
                   <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-300 flex-shrink-0">
                     <Hotel className="w-4 h-4" />
                   </div>
@@ -157,10 +157,11 @@ export const PlacesToVisit: FC<Props> = ({ trip }) => {
 
                   // Extract transit details (AI or smart computed)
                   const transit = activity?.travel_from_previous;
+                  const rawDistance = (actIdx + 1) * 4.2 + 2.5;
                   const distanceStr =
-                    transit?.distance || `${(actIdx + 1) * 4.2 + 2.5} km`;
+                    transit?.distance || `${Number(rawDistance.toFixed(1))} km`;
                   const durationStr =
-                    transit?.duration || `${12 + actIdx * 6} mins`;
+                    transit?.duration || `${Math.round(12 + actIdx * 6)} mins`;
                   const transitMode = transit?.transit_mode || "Drive / Cab";
                   const scenicNote =
                     transit?.scenic_note ||
@@ -213,7 +214,7 @@ export const PlacesToVisit: FC<Props> = ({ trip }) => {
                 })}
 
                 {/* Day Return to Hub Node */}
-                <div className="relative pl-4 sm:pl-8 border-l-2 border-dashed border-gray-700 ml-4 sm:ml-6 py-2 my-4">
+                <div className="hub-node print-avoid-break relative pl-4 sm:pl-8 border-l-2 border-dashed border-gray-700 ml-4 sm:ml-6 py-2 my-4">
                   <div className="absolute -left-[13px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-800 border-2 border-gray-500 flex items-center justify-center text-gray-300">
                     <Hotel className="w-3 h-3" />
                   </div>

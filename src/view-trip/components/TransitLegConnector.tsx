@@ -23,17 +23,17 @@ export const TransitLegConnector: React.FC<TransitLegProps> = ({
   const isWalking = transitMode.toLowerCase().includes("walk");
 
   return (
-    <div className="relative my-4 pl-4 sm:pl-8 border-l-2 border-dashed border-blue-500/40 ml-4 sm:ml-6 py-2">
+    <div className="transit-leg-item print-avoid-break relative my-4 pl-4 sm:pl-8 border-l-2 border-dashed border-blue-500/40 ml-4 sm:ml-6 py-2 print:my-1.5 print:py-1">
       {/* Transit Pulse Pin */}
-      <div className="absolute -left-[13px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-blue-900 border-2 border-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
+      <div className="absolute -left-[13px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-blue-900 border-2 border-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/30 print:w-5 print:h-5 print:-left-[11px]">
         {isWalking ? (
-          <Footprints className="w-3 h-3 text-blue-300" />
+          <Footprints className="w-3 h-3 text-blue-300 print:w-2.5 print:h-2.5" />
         ) : (
-          <Car className="w-3 h-3 text-blue-300" />
+          <Car className="w-3 h-3 text-blue-300 print:w-2.5 print:h-2.5" />
         )}
       </div>
 
-      <div className="bg-[#0c1527]/90 border border-blue-900/40 rounded-xl p-3 sm:p-4 text-xs sm:text-sm text-gray-300 shadow-md backdrop-blur-sm hover:border-blue-700/60 transition">
+      <div className="transit-leg-box bg-[#0c1527]/90 border border-blue-900/40 rounded-xl p-3 sm:p-4 text-xs sm:text-sm text-gray-300 shadow-md backdrop-blur-sm hover:border-blue-700/60 transition print:p-2 print:text-xs print:rounded-lg">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
           <div className="flex items-center gap-2 font-medium text-white">
             <span className="text-blue-400 font-semibold">
