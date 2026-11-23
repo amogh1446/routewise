@@ -1,6 +1,6 @@
-# RouteWise — AI Trip Planner ✈️🗺️
+# ROUTEWISE AI ✈️🗺️
 
-**RouteWise** is a smart, zero-login, database-free travel planning web application. It generates personalized multi-day travel itineraries with sequential hop-by-hop transit legs, en-route food pitstops, hotel recommendations, and one-click Google Maps GPS navigation.
+**ROUTEWISE AI** is a smart, zero-login, database-free travel planning web application. It generates personalized multi-day travel itineraries with sequential hop-by-hop transit legs, en-route food pitstops, hotel recommendations, and one-click Google Maps GPS navigation.
 
 ---
 

@@ -56,12 +56,12 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer }) => {
 const FAQ: React.FC = () => {
   const faqItems = [
     {
-      question: "How does AI Trip Planner work?",
+      question: "How does ROUTEWISE AI work?",
       answer:
         "Our app uses artificial intelligence to create personalized travel itineraries based on your preferences and interests.",
     },
     {
-      question: "Is AI Trip Planner free to use?",
+      question: "Is ROUTEWISE AI free to use?",
       answer:
         "Yes, we offer a free version with basic features. You can also opt for our Pro plan for advanced features.",
     },

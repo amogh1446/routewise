@@ -65,7 +65,7 @@ const Header: React.FC = () => {
             <Compass className="w-5 h-5 text-white" />
           </div>
           <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white via-gray-100 to-blue-300 bg-clip-text text-transparent">
-            AI Trip Planner
+            ROUTEWISE AI
           </span>
         </Link>
 

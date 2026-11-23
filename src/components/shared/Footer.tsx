@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
         </a>
       </div>
       <p className="text-center mt-4">
-        &copy; 2024 AI Trip Planner. All rights reserved.
+        &copy; {new Date().getFullYear()} ROUTEWISE AI. All rights reserved.
       </p>
       <p className="text-center">
         <a href="#" className="hover:underline">

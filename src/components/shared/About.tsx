@@ -20,7 +20,7 @@ const About: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            AI Trip Planner is an independent project built to modernize how travel itineraries are created. Powered by artificial intelligence, it structures connected daily journeys complete with route transit times, distances, and en-route food pitstops.
+            ROUTEWISE AI is an independent project built to modernize how travel itineraries are created. Powered by artificial intelligence, it structures connected daily journeys complete with route transit times, distances, and en-route food pitstops.
           </motion.p>
         </div>
         <div className="flex flex-col md:flex-row md:justify-between md:space-x-8 gap-6">
@@ -43,7 +43,7 @@ const About: React.FC = () => {
           >
             <h3 className="text-2xl font-semibold mb-4 text-indigo-400">The Project</h3>
             <p className="text-gray-300 leading-relaxed">
-              Created as an individual project, AI Trip Planner combines Google Maps Places API (New) with Google Gemini AI and client-side browser storage to deliver a private, database-free, and seamless travel planning experience.
+              Created as an individual project, ROUTEWISE AI combines Google Maps Places API (New) with Google Gemini AI and client-side browser storage to deliver a private, database-free, and seamless travel planning experience.
             </p>
           </motion.div>
         </div>
